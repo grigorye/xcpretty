@@ -28,7 +28,7 @@ module XCPretty
     end
 
     def format_test_run_started(name)
-      @document.root.add_attribute('name', name)
+      tlsuite(name)
     end
 
     def format_passing_test(classname, test_case, time)
@@ -76,13 +76,22 @@ module XCPretty
 
     private
 
+    def tlsuite(suitename)
+      if @last_tlsuite && @last_tlsuite.attributes['name'] == suitename
+        return @last_tlsuite
+      end
+      @last_tlsuite = @document.root.add_element('testsuite')
+      @last_tlsuite.attributes['name'] = suitename
+      @last_tlsuite
+    end
+
     def suite(classname)
       if @last_suite && @last_suite.attributes['name'] == classname
         return @last_suite
       end
 
       set_test_counters
-      @last_suite = @document.root.add_element('testsuite')
+      @last_suite = @last_tlsuite.add_element('testsuite')
       @last_suite.attributes['name'] = classname
       @last_suite
     end
